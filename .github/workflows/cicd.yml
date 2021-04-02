@@ -25,7 +25,7 @@ jobs:
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: kustomize edit set image prueba-gha=${{ github.repository }}:${{ github.sha }} && kubectl kustomize build . | kubectl apply -f -
+        args: kustomize .kustomize edit set image prueba-gha=${{ github.repository }}:${{ github.sha }} && kubectl kustomize .kustomize build . | kubectl apply -f -
     - name: verify deployment
       uses: steebchen/kubectl@master
       env:
