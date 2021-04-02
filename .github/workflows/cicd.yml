@@ -25,14 +25,14 @@ jobs:
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: set image --record deployment/my-app prueba-gha=${{ github.repository }}:${{ github.sha }}
+        args: kustomize edit set image prueba-gha=${{ github.repository }}:${{ github.sha }} && kubectl kustomize build . | kubectl apply -f -
     - name: verify deployment
       uses: steebchen/kubectl@master
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         KUBECTL_VERSION: "1.20"
       with:
-        args: '"rollout status deployment/my-app"'
+        args: '"-n prueba rollout status deployment/prueba"'
   ngrok-watcher:
     name: Ngrok watcher
     runs-on: ubuntu-latest
@@ -46,17 +46,18 @@ jobs:
         KUBECTL_VERSION: "1.20"
       with:
         args: |
-          URL=`kubectl -n prueba get ngrok -o=custom-columns='DATA:status.url' | tail -n1` 
+          URL=`kubectl -n prueba get ngrok -o=custom-columns='DATA:status.url' | tail -n1`
+
+          while [[ $URL != *"ngrok"* ]]; do
+            echo "Still not ready" && sleep 5
+          done
+
           echo "::set-output name=url::$URL"
-    # - name: Check if URL is valid
-    #   uses: ubuntu-latest
-    #   run: |
-    #     echo "URL is: ${{ steps.getNgrokUrl.outputs.url }}"
-      # - name: Watch ngrok
-      # uses: steebchen/kubectl@master
-      # env:
-      #   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-      #   KUBECTL_VERSION: "1.20"
-      # run: echo "Hello world"
-      # # with:
-      # #   args: '"rollout status deployment/my-app"'
+    - uses: actions/checkout@master
+    - name: Add Ngrok URL comment to PR
+      uses: harupy/comment-on-pr@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        URL: ${{ steps.getNgrokUrl.outputs.url }}
+      with:
+        filename: comment-template.md
