@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+  name: prueba-gha
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: prueba-gha
+  template:
+    metadata:
+      labels:
+        name: prueba-gha
+    spec:
+      containers:
+      - name: prueba-gha
+        image: pablokbs/prueba-gha
+        ports:
+        - containerPort: 80
+          name: http
