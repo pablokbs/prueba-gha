@@ -45,11 +45,13 @@ jobs:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         KUBECTL_VERSION: "1.20"
       with:
-        args: '"-n prueba get ngrok -o=custom-columns='DATA:status.url'" | tail -n1 | echo "::set-output name=url::hola.com"'
-    - name: Check if URL is valid
-      uses: ubuntu-latest
-      run:
-        - echo "URL is: ${{ steps.getNgrokUrl.outputs.url }}"
+        args: |
+          URL=`kubectl -n prueba get ngrok -o=custom-columns='DATA:status.url' | tail -n1` 
+          echo "::set-output name=url::$URL"
+    # - name: Check if URL is valid
+    #   uses: ubuntu-latest
+    #   run: |
+    #     echo "URL is: ${{ steps.getNgrokUrl.outputs.url }}"
       # - name: Watch ngrok
       # uses: steebchen/kubectl@master
       # env:
