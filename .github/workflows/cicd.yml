@@ -40,7 +40,7 @@ jobs:
     steps:
     - name: Get ngrok URL
       id: getNgrokUrl
-      uses: steebchen/kubectl@master
+      uses: debianmaster/kubectl@master
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         KUBECTL_VERSION: "1.20"
