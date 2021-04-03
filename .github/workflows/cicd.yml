@@ -1,27 +1,27 @@
 on: push
 name: deploy
 jobs:
-  # build-and-push:
-  #   name: build and push image
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@master
-  #   - name: build and push to docker
-  #     uses: docker/build-push-action@v2
-  #     with:
-  #       username: ${{ secrets.DOCKER_USERNAME }}
-  #       password: ${{ secrets.DOCKER_PASSWORD }}
-  #       repository: ${{ github.repository }}
-  #       tag_with_ref: true
-  #       tag_with_sha: true
-  #       tags: ${{ github.sha }}
+  build-and-push:
+    name: build and push image
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: build and push to docker
+      uses: docker/build-push-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        repository: ${{ github.repository }}
+        tag_with_ref: true
+        tag_with_sha: true
+        tags: ${{ github.sha }}
   deploy-to-cluster:
     name: deploy to cluster
     runs-on: ubuntu-latest
     env:
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       HOLA: test
-    #needs: build-and-push
+    needs: build-and-push
     steps:
     - uses: actions/checkout@master
     - name: deploy to cluster
@@ -42,6 +42,7 @@ jobs:
 
         while [[ $URL != *"ngrok"* ]]; do
           echo "Still not ready" && sleep 5
+          URL=`kubectl -n prueba get ngrok -o=custom-columns='DATA:status.url' | tail -n1`
         done
 
         echo "::set-output name=url::$URL"
