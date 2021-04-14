@@ -1,9 +1,12 @@
-on: push
+on:
+  push:
+  workflow_dispatch:
 name: deploy
 jobs:
   build-and-push:
     name: build and push image
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     steps:
     - uses: actions/checkout@master
     - name: build and push to docker
@@ -18,6 +21,7 @@ jobs:
   deploy-to-cluster:
     name: deploy to cluster
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     env:
       KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       HOLA: test
@@ -52,3 +56,16 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         msg: "URL for environment is: ${{ steps.kubectl.outputs.url }}"
+  integration_test_log:
+    name: Information about the integration test execution
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    env:
+      GITHUB_CONTEXT: ${{ toJson(github) }}
+    steps:
+      - name: Show Information
+        run: |
+          echo "This workflow run is triggered by ${{ github.event_name }} ."
+          echo " *****************************************************************************"
+          echo "$GITHUB_CONTEXT"
+          echo " *****************************************************************************"
