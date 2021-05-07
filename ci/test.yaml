@@ -1,9 +1,7 @@
-config:
-  platform: linux
-  image_resource:
-    type: registry-image
-    source: {repository: alpine}
-  run:
-    path: echo
-    args: ["Hola desde la repo :)"]
-    
+platform: linux
+image_resource:
+  type: registry-image
+  source: {repository: alpine}
+run:
+  path: echo
+  args: ["Hola desde la repo :)"]
