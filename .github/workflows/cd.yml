@@ -36,7 +36,7 @@ jobs:
       uses: steebchen/kubectl@v2.0.0
       with:
         config: ${{ secrets.KUBE_CONFIG_DATA }}
-        command: set image --record deployment/prueba-gha prueba-gha=pablokbs/prueba-gha:${{ github.sha }}
+        command: -n prueba set image --record deployment/prueba-gha prueba-gha=pablokbs/prueba-gha:${{ github.sha }}
     -
       name: verify deployment
       uses: steebchen/kubectl@v2.0.0
@@ -45,4 +45,4 @@ jobs:
         KUBECTL_VERSION: "1.28"
       with:
         config: ${{ secrets.KUBE_CONFIG_DATA }}
-        command: '"rollout status deployment/prueba-gha"'
+        command: -n prueba rollout status deployment/prueba-gha
