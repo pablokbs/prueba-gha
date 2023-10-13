@@ -33,19 +33,19 @@ jobs:
     steps:
     -
       name: deploy to cluster
-      uses: steebchen/kubectl@master
+      uses: steebchen/kubectl@v2.0.0
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
       with:
-        args: set image --record deployment/my-app prueba-gha=pablokbs/prueba-gha:${{ github.sha }}
+        args: set image --record deployment/prueba-gha prueba-gha=pablokbs/prueba-gha:${{ github.sha }}
     -
       name: verify deployment
-      uses: steebchen/kubectl@master
+      uses: steebchen/kubectl@v2.0.0
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         KUBECTL_VERSION: "1.28"
       with:
-        args: '"rollout status deployment/my-app"'
+        args: '"rollout status deployment/prueba-gha"'
 
   ngrok-watcher:
     name: Ngrok watcher
@@ -58,7 +58,7 @@ jobs:
       uses: debianmaster/kubectl@master
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        KUBECTL_VERSION: "1.20"
+        KUBECTL_VERSION: "1.28"
       with:
         args: |
           URL=`kubectl -n prueba get ngrok -o=custom-columns='DATA:status.url' | tail -n1`
