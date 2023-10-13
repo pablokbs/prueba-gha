@@ -1,6 +1,10 @@
-on: push
-name: deploy
+on:
+  push:
+    branches:
+      - master
+name: CD
 jobs:
+
   build-and-push:
     name: build and push image
     runs-on: ubuntu-latest
@@ -15,6 +19,8 @@ jobs:
         tag_with_ref: true
         tag_with_sha: true
         tags: ${{ github.sha }}
+        push: true
+
   deploy-to-cluster:
     name: deploy to cluster
     runs-on: ubuntu-latest
@@ -30,9 +36,10 @@ jobs:
       uses: steebchen/kubectl@master
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        KUBECTL_VERSION: "1.20"
+        KUBECTL_VERSION: "1.28"
       with:
         args: '"rollout status deployment/my-app"'
+
   ngrok-watcher:
     name: Ngrok watcher
     runs-on: ubuntu-latest
@@ -46,17 +53,5 @@ jobs:
         KUBECTL_VERSION: "1.20"
       with:
         args: |
-          URL=`kubectl -n prueba get ngrok -o=custom-columns='DATA:status.url' | tail -n1` 
+          URL=`kubectl -n prueba get ngrok -o=custom-columns='DATA:status.url' | tail -n1`
           echo "::set-output name=url::$URL"
-    # - name: Check if URL is valid
-    #   uses: ubuntu-latest
-    #   run: |
-    #     echo "URL is: ${{ steps.getNgrokUrl.outputs.url }}"
-      # - name: Watch ngrok
-      # uses: steebchen/kubectl@master
-      # env:
-      #   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-      #   KUBECTL_VERSION: "1.20"
-      # run: echo "Hello world"
-      # # with:
-      # #   args: '"rollout status deployment/my-app"'
