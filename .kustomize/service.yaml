@@ -9,3 +9,4 @@ spec:
     targetPort: http
   selector:
     name: prueba-gha
+  type: LoadBalancer
