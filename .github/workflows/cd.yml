@@ -29,7 +29,7 @@ jobs:
   deploy-to-cluster:
     name: deploy to cluster
     runs-on: ubuntu-latest
-    needs: build-and-push
+    needs: docker
     steps:
     -
       name: deploy to cluster
